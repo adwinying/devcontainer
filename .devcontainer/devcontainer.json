@@ -1,0 +1,48 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
+// https://github.com/microsoft/vscode-dev-containers/tree/v0.192.0/containers/docker-from-docker
+{
+	"name": "Docker from Docker",
+	"dockerFile": "../Dockerfile",
+	"runArgs": ["--init", "--privileged"],
+	"mounts": [ "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind" ],
+	"overrideCommand": false,
+	
+	// Use this environment variable if you need to bind mount your local source code into a new container.
+	"remoteEnv": {
+		"LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}"
+	},
+
+	// Set *default* container specific settings.json values on container create.
+	"settings": {
+		"workbench.colorTheme": "Nord",
+		"workbench.colorCustomizations": {
+			"[Nord]": {
+				"editor.background": "#111317",
+				"minimap.background": "#111317",
+				"terminal.background": "#111317",
+				"sideBar.background": "#111317",
+				"panel.background": "#111317",
+				"statusBar.background": "#111317",
+				"welcomePage.background": "#111317",
+				"editorGutter.background": "#111317",
+				"activityBar.background": "#111317",
+				"tab.activeBackground": "#111317"
+			}
+		}
+	},
+
+	// Add the IDs of extensions you want installed when the container is created.
+	"extensions": [
+		"ms-azuretools.vscode-docker",
+		"arcticicestudio.nord-visual-studio-code"
+	],
+	
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	// "forwardPorts": [],
+
+	// Use 'postCreateCommand' to run commands after the container is created.
+	// "postCreateCommand": "docker --version",
+
+	// Comment out connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
+	// "remoteUser": "vscode"
+}
