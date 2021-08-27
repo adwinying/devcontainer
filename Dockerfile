@@ -10,7 +10,7 @@ USER user
 
 RUN sudo pacman -Syy && sudo pacman -Syu --noconfirm \
     # Get essential packages
-    && sudo pacman -S --needed --noconfirm zsh git stow vim tmux wget lazygit htop neofetch docker docker-compose \
+    && sudo pacman -S --needed --noconfirm zsh git stow vim tmux wget openssh mosh lazygit htop neofetch docker docker-compose \
     # Setup dotfiles
     && mkdir -p ~/.config \
     && git clone https://github.com/adwinying/dotfiles ~/.dotfiles && cd ~/.dotfiles && stow -v zsh git vim tmux \
