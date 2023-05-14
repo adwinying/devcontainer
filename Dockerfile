@@ -2,9 +2,11 @@ FROM nixos/nix
 
 ARG TERM
 ARG FLAKE_PATH="github:adwinying/dotfiles?dir=nix-config"
-ENV NIX_CONFIG="experimental-features = nix-command flakes"
+ARG NIX_CONFIG="experimental-features = nix-command flakes \n filter-syscalls = false"
 
-RUN mkdir -p /nix/var/nix/gcroots/per-user/root \
+RUN export NIX_CONFIG=$(echo -e ${NIX_CONFIG}) \
+  # Create required directory for home-manager
+  && mkdir -p /nix/var/nix/gcroots/per-user/root \
   # Remove conflicting packages
   && nix-env -e git man-db \
   # Bootstrap user environment
