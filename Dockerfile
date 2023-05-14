@@ -1,28 +1,24 @@
-FROM archlinux:base-devel
+FROM nixos/nix
 
 ARG TERM
+ARG FLAKE_PATH="github:adwinying/dotfiles?dir=nix-config"
+ENV NIX_CONFIG="experimental-features = nix-command flakes"
 
-RUN useradd -m user \
-    && usermod -L user \
-    && echo "user ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+RUN mkdir -p /nix/var/nix/gcroots/per-user/root \
+  # Remove conflicting packages
+  && nix-env -e git man-db \
+  # Bootstrap user environment
+  && nix-shell -p home-manager --command "home-manager switch --flake \"${FLAKE_PATH}#docker-$(uname -m)\"" \
+  # Change default shell to zsh
+  && nix-shell -p util-linux --command "chsh -s /root/.nix-profile/bin/zsh root" \
+  # Install zsh plugins
+  && TERM=${TERM:-screen-256color} zsh -isc "source ~/.zshrc" \
+  # Install tmux plugins
+  && git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm \
+  && TMUX_PLUGIN_MANAGER_PATH="~/.tmux/plugins" ~/.tmux/plugins/tpm/bin/install_plugins
 
-USER user
+WORKDIR /root
 
-RUN sudo pacman -Syy && sudo pacman -Syu --noconfirm \
-    # Get essential packages
-    && sudo pacman -S --needed --noconfirm $(curl -s https://raw.githubusercontent.com/adwinying/dotfiles/master/packages/essentials.txt | xargs) \
-    # Setup dotfiles
-    && git clone https://github.com/adwinying/dotfiles ~/.dotfiles && cd ~/.dotfiles && stow -v zsh git vim neovim tmux lazygit paru ranger \
-    # Install AUR helper
-    && git clone https://aur.archlinux.org/paru-bin.git ~/.paru && cd ~/.paru && makepkg -si --noconfirm \
-    # Get cli packages
-    && paru -S --needed --noconfirm $(cat ~/.dotfiles/packages/cli.txt | xargs) \
-    # Install tmux plugins
-    && git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm \
-    && TMUX_PLUGIN_MANAGER_PATH="~/.tmux/plugins" ~/.tmux/plugins/tpm/bin/install_plugins \
-    # Install zsh plugins
-    && TERM=${TERM:-screen-256color} zsh -isc "source ~/.zshrc" \
-    # Change default shell to zsh
-    && sudo usermod --shell /bin/zsh user
+ENTRYPOINT [ "zsh" ]
 
 CMD [ "sleep", "infinity" ]
