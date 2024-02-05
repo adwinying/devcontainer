@@ -2,9 +2,9 @@ FROM nixos/nix
 
 ARG TERM
 ARG FLAKE_PATH="github:adwinying/dotfiles?dir=nix-config"
-ARG NIX_CONFIG="experimental-features = nix-command flakes \n filter-syscalls = false"
 
-RUN export NIX_CONFIG=$(echo -e ${NIX_CONFIG}) \
+RUN echo "experimental-features = nix-command flakes" >> /etc/nix/nix.conf \
+  && echo "filter-syscalls = false" >> /etc/nix/nix.conf \
   # Create required directory for home-manager
   && mkdir -p /nix/var/nix/gcroots/per-user/root \
   # Remove conflicting packages
